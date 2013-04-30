@@ -1,0 +1,5 @@
+syn keyword CTagsMember remove_all on_openProjectButton_clicked on_createProjectButton_clicked setupUi copy_file show_ui on_addProjectButton_clicked createProject on_removeProjectButton_clicked showProjectUi add_project_to_list closeEvent on_selectPathButton_clicked replace_keys __init__ get_project_list
+syn keyword CTagsGlobalVariable _encoding cfg_posy cfg_posx form config_path cfg_project_template_path app assist_path armlib_path armbin_path _fromUtf8 cfg_project_path config mod
+syn keyword CTagsFunction retranslateUi load_cfg save_cfg _translate _fromUtf8
+syn keyword CTagsClass VimAssistDlg Ui_vimAssistDlg createProjectCommon
+

@@ -1,0 +1,32 @@
+set(DEBUG FALSE)
+set(ARM_LINUX_GCC FALSE)
+set(CPP FALSE)
+
+project(^PROJECTNAMEU^)
+
+if(DEBUG)
+	set(CMAKE_BUILD_TYPE Debug)
+else()
+	set(CMAKE_BUILD_TYPE Release)
+endif()
+
+if(ARM_LINUX_GCC)
+	set(CMAKE_SYSTEM_NAME Linux)
+	set(CMAKE_FIND_ROOT_PATH "^ARMLIBPATH^")
+	set(CMAKE_C_COMPILER "^ARMBINPATH^")
+	set(CMAKE_FIND_ROOT_PATH_MODE_RPOGRAM NEVER)
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+endif()
+
+if(CPP)
+	set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+	set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g2 -ggdb")
+else()
+	set(CMAKE_C_FLAGS_RELEASE "$ENV{CFLAGS} -O3 -Wall")
+	set(CMAKE_C_FLAGS_DEBUG "$ENV{CFLAGS} -O0 -Wall -g2 -ggdb")
+endif()
+
+aux_source_directory(${^PROJECTNAMEU^_SOURCE_DIR} srclist)
+set(SRC_LIST ${srclist})
+add_executable(^PROJECTNAME^_out ${SRC_LIST})
