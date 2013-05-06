@@ -94,6 +94,9 @@ class createProjectCommon():
         if mod.get_project_sort() == 3:
             if not os.path.isfile(project_path + "CMakeLists.txt"):
                 self.copy_file(cfg.assist_path + "CMakeLists_CApp.txt", project_path + "CMakeLists.txt", project_name)
+        elif mod.get_project_sort() == 4:
+            if not os.path.isfile(project_path + "CMakeLists.txt"):
+                self.copy_file(cfg.assist_path + "CMakeLists_CPPApp.txt", project_path + "CMakeLists.txt", project_name)
 
         # 创建.vimprj目录以及项目文件
         os.mkdir(project_path + ".vimprj")

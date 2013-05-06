@@ -16,12 +16,34 @@ function! Update()
 	exec "cd .."
 
 	" 生成cscope文件
-	exec "!find . -type f -name \"*.c\" -o -name \"*.h\" -o -name \"*.S\" -o -name \"*.sh\" -o -name \"*.py\" > ./.vimprj/cscope.file"
+	exec "!find . -type f -name \"*.c\" -o -name \"*.h\" -o -name \"*.cc\" -o -name \"*.S\" -o -name \"*.sh\" -o -name \"*.py\" > ./.vimprj/cscope.file"
 	exec "!cscope -bq -f ./.vimprj/cscope.out -i ./.vimprj/cscope.file"
 	exec "cs add ./.vimprj/cscope.out"
 
 endfunction
 
+function! GenSysTags()
+    " C应用程序
+    exec "ctags -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ --file-scope=yes --langmap=c:+.h --languages=c,c++ --links=yes --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q  -f ~/.vim/capptags  /usr/include/*"
+    " 网络编程
+    exec "ctags -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ --file-scope=yes --langmap=c:+.h --languages=c,c++ --links=yes --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q  -f ~/.vim/nettags  /usr/include/netinet/* /usr/include/arpa/*"
+    " 驱动开发
+    exec "ctags -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ --file-scope=yes --langmap=c:+.h --languages=c,c++ --links=yes --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q  -f ~/.vim/drivertags  /usr/src/linux-headers-$(uname -r)/include/linux/*"
+endfunction
+
+function! GenMakefile()
+    if filereadable("CMakeLists.txt")
+        if finddir("build") == ''
+            exec "!mkdir build" 
+        endif
+
+        if !filereadable("./build/Makefile")
+            exec "cd build"
+            exec "!cmake .."
+            exec "cd .."
+        endif
+    endif
+endfunction
 
 "编译,调试,运行程序
 function! SaveAndMake()
@@ -42,19 +64,25 @@ function! SaveAndMake()
 		return
 	endif
 
-    "没有Makefile就设置编译参数
-    if !filereadable("Makefile")
-        if &filetype=="c"
-            set makeprg=gcc\ -o\ %<\ %
-        elseif &filetype=="cpp"
-            set makeprg=g++\ -o\ %<\ %
-		endif
+    if filereadable("CMakeLists.txt")            " 有CMake文件，应该使用CMake生成Makefile
+        call GenMakefile()
+
+        exec "cd build"
+        exec "make"
+        exec "cw"
+        exec "cd .."
+    else
+        if !filereadable("Makefile")
+            if &filetype=="c"
+                set makeprg=gcc\ -o\ %<\ %
+            elseif &filetype=="cpp"
+                set makeprg=g++\ -o\ %<\ %
+            endif
+        endif
+        exec "make"
+        exec "cw"
     endif
 
-    "编译
-    exec "make"
-    "如果有错误,就打开QuickFix窗口
-    exec "cw"
 endfunction
 
 function! RunExe()
@@ -62,7 +90,7 @@ function! RunExe()
         exec "!./driver"
     else
         let s:exename = strpart(getcwd(), strridx(getcwd(), "/")+1, strlen(getcwd()))
-        exec "!./".s:exename."_out"
+        exec "!./build/".s:exename."_out"
     endif
 endfunction
 
@@ -71,7 +99,7 @@ function! DbgExe()
         exec "!nemiver ./driver"
     else
         let s:exename = strpart(getcwd(), strridx(getcwd(), "/")+1, strlen(getcwd()))
-        exec "!nemiver ./".s:exename."_out"
+        exec "!nemiver ./build/".s:exename."_out"
     endif
 endfunction
 
@@ -105,16 +133,17 @@ endfunction
 
 " 工程向导
 function! s:CreateProject()
-    execute("!python " . $HOME . "/.vim/plugin/VimAssist/ProjectWizard.pyw")
+    execute("!python " . $HOME . "/.vim/bundle/VimAssist/VimAssist/ProjectWizard.pyw")
     if v:shell_error == 1
-        source $HOME/.vim/plugin/VimAssist/prj.vim_
+        source $HOME/.vim/bundle/VimAssist/VimAssist/prj.vim_
     endif
 endfunction
 
+command! -nargs=* GST call GenSysTags(<f-args>)
 command! -nargs=* MAKE call SaveAndMake(<f-args>)
 command! -nargs=* M call SaveAndMake(<f-args>)
 command! -nargs=* MI exec "make install"
-command! -nargs=* CM exec "!cmake ."
+command! -nargs=* CM call GenMakefile()
 command! -nargs=* EM exec "e ./CMakeLists.txt"
 command! -nargs=* R call RunExe(<f-args>)
 command! -nargs=* D call DbgExe(<f-args>)
