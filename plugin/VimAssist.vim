@@ -46,11 +46,24 @@ function! GenMakefile()
 endfunction
 
 "编译,调试,运行程序
-function! SaveAndMake()
+function! SaveAndMake(quick_make)
     "先关闭QuickFix窗口
     exec "ccl"
     "保存文档
     exec "w"
+
+    " 快速编译
+    if a:quick_make==1
+        if &filetype=="c"
+                exec "!gcc -g %"
+                exec "cw"
+            elseif &filetype=="cpp"
+                exec "!g++ -g %"
+                exec "cw"
+            endif
+        endif
+        return
+    endif
 
 	" 如果是python,就直接运行
 	if &filetype=="python"
@@ -147,6 +160,9 @@ command! -nargs=* CM call GenMakefile()
 command! -nargs=* EM exec "e ./CMakeLists.txt"
 command! -nargs=* R call RunExe(<f-args>)
 command! -nargs=* D call DbgExe(<f-args>)
+command! -nargs=* QM call SaveAndMake(1)
+command! -nargs=* QR exec "!./a.out"
+command! -nargs=* QD exec "!nemiver ./a.out"
 
 command! -nargs=* CCH call CreateCAndH(<f-args>)
 command! -nargs=* CH call CreateCAndH(expand("%:t:r"))
