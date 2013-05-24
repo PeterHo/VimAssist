@@ -55,10 +55,10 @@ function! SaveAndMake(quick_make)
     " 快速编译
     if a:quick_make==1
         if &filetype=="c"
-                exec "!gcc -g %"
+                exec "!gcc -g \"%\""
                 exec "cw"
             elseif &filetype=="cpp"
-                exec "!g++ -g %"
+                exec "!g++ -g \"%\""
                 exec "cw"
             endif
         endif
