@@ -1,3 +1,3 @@
 :call nerdtree#closeTreeIfOpen()
-:call g:NERDTreeCreator.CreatePrimary('/home/goodhzz/src/10071/')
-:call nerdtree#bookmarkNode('10071')
+:call g:NERDTreeCreator.CreatePrimary('/home/goodhzz/src/494/')
+:call nerdtree#bookmarkNode('494')

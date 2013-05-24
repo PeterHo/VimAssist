@@ -153,8 +153,8 @@ function! s:CreateProject()
 endfunction
 
 command! -nargs=* GST call GenSysTags(<f-args>)
-command! -nargs=* MAKE call SaveAndMake(<f-args>)
-command! -nargs=* M call SaveAndMake(<f-args>)
+command! -nargs=* MAKE call SaveAndMake(0)
+command! -nargs=* M call SaveAndMake(0)
 command! -nargs=* MI exec "make install"
 command! -nargs=* CM call GenMakefile()
 command! -nargs=* EM exec "e ./CMakeLists.txt"
