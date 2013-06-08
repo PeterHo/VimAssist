@@ -55,31 +55,36 @@ function! SaveAndMake(quick_make)
     " 快速编译
     if a:quick_make==1
         if &filetype=="c"
-                set makeprg=gcc\ -g\ \"%\"
-                "exec "!gcc -g \"%\""
-                exec "make"
-                exec "cw"
-            elseif &filetype=="cpp"
-                "exec "!g++ -g \"%\""
-                set makeprg=g++\ -g\ \"%\"
-                exec "make"
-                exec "cw"
-            endif
+            set makeprg=gcc\ -g\ \"%\"
+            "exec "!gcc -g \"%\""
+            exec "make"
+            exec "cw"
+        elseif &filetype=="cpp"
+            "exec "!g++ -g \"%\""
+            set makeprg=g++\ -g\ \"%\"
+            exec "make"
+            exec "cw"
         endif
         return
     endif
 
 	" 如果是python,就直接运行
 	if &filetype=="python"
-		exec "!python ".expand("%:p")
+		exec "!python \"".expand("%:p")."\""
 		return
 	endif
 
 	" 如果是shell文件,也直接运行
 	if &filetype=="sh"
-		exec "!bash ".expand("%:p")
+		exec "!bash \"".expand("%:p")."\""
 		return
 	endif
+
+    " 如果是go,也直接运行
+    if &filetype=="go"
+        exec "!go run \"".expand("%:p")."\""
+        return
+    endif
 
     if filereadable("CMakeLists.txt")            " 有CMake文件，应该使用CMake生成Makefile
         call GenMakefile()
