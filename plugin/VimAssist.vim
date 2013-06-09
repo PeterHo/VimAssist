@@ -64,6 +64,10 @@ function! SaveAndMake(quick_make)
             set makeprg=g++\ -g\ \"%\"
             exec "make"
             exec "cw"
+        elseif &filetype=="go"
+            set makeprg=go\ build\ -gcflags\ \"-N\ -l\"\ \"%\"
+            exec "make"
+            exec "cw"
         endif
         return
     endif
@@ -80,9 +84,11 @@ function! SaveAndMake(quick_make)
 		return
 	endif
 
-    " 如果是go,也直接运行
+    " 如果是go,不需要makefile,直接编译
     if &filetype=="go"
-        exec "!go run \"".expand("%:p")."\""
+        set makeprg=go\ build\ \"%\"
+        exec "make"
+        exec "cw"
         return
     endif
 
@@ -108,7 +114,9 @@ function! SaveAndMake(quick_make)
 endfunction
 
 function! RunExe()
-    if filereadable("driver") && filereadable("Problem.html") && filereadable("testcases.txt")
+    if &filetype=="go"
+        exec "!\"".expand("%:p:r")."\""
+    elseif filereadable("driver") && filereadable("Problem.html") && filereadable("testcases.txt")
         exec "!./driver"
     else
         let s:exename = strpart(getcwd(), strridx(getcwd(), "/")+1, strlen(getcwd()))
@@ -117,7 +125,9 @@ function! RunExe()
 endfunction
 
 function! DbgExe()
-    if filereadable("driver") && filereadable("Problem.html") && filereadable("testcases.txt")
+    if &filetype=="go"
+        exec "!nemiver \"".expand("%:p:r")."\""
+    elseif filereadable("driver") && filereadable("Problem.html") && filereadable("testcases.txt")
         exec "!nemiver ./driver"
     else
         let s:exename = strpart(getcwd(), strridx(getcwd(), "/")+1, strlen(getcwd()))
