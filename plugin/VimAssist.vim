@@ -21,6 +21,7 @@ function! Update()
     exec "cs add ./.vimprj/cscope.out"
 endfunction
 
+" 生成系统Tags
 function! GenSysTags()
     " C应用程序
     exec "ctags -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ --file-scope=yes --langmap=c:+.h --languages=c,c++ --links=yes --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q  -f ~/.vim/capptags  /usr/include/*"
@@ -30,6 +31,7 @@ function! GenSysTags()
     exec "ctags -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ --file-scope=yes --langmap=c:+.h --languages=c,c++ --links=yes --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q  -f ~/.vim/drivertags  /usr/src/linux-headers-$(uname -r)/include/linux/*"
 endfunction
 
+" 使用CMake生成Makefile文件
 function! GenMakefile()
     if filereadable("CMakeLists.txt")
         if finddir("build") == ''
@@ -71,17 +73,6 @@ function! SaveAndMake(quick_make)
         return
     endif
 
-    " 如果是python,就直接运行
-    if &filetype=="python"
-        exec "!python \"".expand("%:p")."\""
-        return
-    endif
-
-    " 如果是shell文件,也直接运行
-    if &filetype=="sh"
-        exec "!bash \"".expand("%:p")."\""
-        return
-    endif
 
     " 如果是go,不需要makefile,直接编译
     if &filetype=="go"
@@ -113,7 +104,11 @@ function! SaveAndMake(quick_make)
 endfunction
 
 function! RunExe()
-    if &filetype=="go"
+    if &filetype=="python"
+        exec "!python \"".expand("%:p")."\""
+    elseif &filetype=="sh"
+        exec "!bash \"".expand("%:p")."\""
+    elseif &filetype=="go"
         exec "!\"".expand("%:p:r")."\""
     elseif filereadable("driver") && filereadable("Problem.html") && filereadable("testcases.txt")
         exec "!./driver"
