@@ -5,7 +5,6 @@ endif
 
 " 更新Tags和Cscope
 function! Update()
-    " single file
     if getcwd() == $HOME
         cd %:p:h
     endif
