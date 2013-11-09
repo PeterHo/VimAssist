@@ -5,6 +5,9 @@ endif
 
 " 更新Tags和Cscope
 function! Update()
+    if getcwd() == $HOME
+        cd %:p:h
+
     let s:tags_dir = '.'.'/.vimprj/'
     if finddir(s:tags_dir) == ''    " 文件夹不存在
         exec "!mkdir .vimprj"
