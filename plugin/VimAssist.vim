@@ -4,25 +4,27 @@ if !has('python')
 endif
 
 " 更新Tags和Cscope
-function! Update()
+function! Update(bCscope)
     if getcwd() == $HOME
         cd %:p:h
     endif
 
     let s:tags_dir = '.'.'/.vimprj/'
     if finddir(s:tags_dir) == ''    " 文件夹不存在
-        exec "!mkdir .vimprj"
+        silent exec "!mkdir .vimprj"
     endif
 
     " 生成tags文件
-    exec "cd .vimprj"
-    exec "!ctags --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q --languages=c,c++,javascript,java,python,lua,vim,matlab,make,sh,c, --langmap=c:+.C,c++:+.H,c++:+.inl,c++:+.ipp,javascript:+.as,python:+.pyw,lua:+.wlua,c:+.hlsl,c:+.vsh,c:+.psh,c:+.fx,c:+.fxh,c:+.cg,c:+.shd,c:+.glsl, -o./tags -R .."
-    exec "cd .."
+    silent exec "cd .vimprj"
+    silent exec "!ctags --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q --languages=c,c++,javascript,java,python,lua,vim,matlab,make,sh,c, --langmap=c:+.C,c++:+.H,c++:+.inl,c++:+.ipp,javascript:+.as,python:+.pyw,lua:+.wlua,c:+.hlsl,c:+.vsh,c:+.psh,c:+.fx,c:+.fxh,c:+.cg,c:+.shd,c:+.glsl, -o./tags -R .."
+    silent exec "cd .."
 
-    " 生成cscope文件
-    exec "!find . -type f -name \"*.c\" -o -name \"*.h\" -o -name \"*.cc\" -o -name \"*.S\" -o -name \"*.sh\" -o -name \"*.py\" > ./.vimprj/cscope.file"
-    exec "!cscope -bq -f ./.vimprj/cscope.out -i ./.vimprj/cscope.file"
-    exec "cs add ./.vimprj/cscope.out"
+    if a:bCscope
+        " 生成cscope文件
+        silent exec "!find . -type f -name \"*.c\" -o -name \"*.h\" -o -name \"*.cc\" -o -name \"*.S\" -o -name \"*.sh\" -o -name \"*.py\" > ./.vimprj/cscope.file"
+        silent exec "!cscope -bq -f ./.vimprj/cscope.out -i ./.vimprj/cscope.file"
+        silent exec "cs add ./.vimprj/cscope.out"
+    endif
 endfunction
 
 " 生成系统Tags
